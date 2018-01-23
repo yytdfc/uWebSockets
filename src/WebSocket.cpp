@@ -313,7 +313,7 @@ bool WebSocket<isServer>::handleFragment(char *data, size_t length, unsigned int
                 return true;
             }
 
-            group->messageHandler(webSocket, data, length, (OpCode) opCode);
+            group->messageHandler(webSocket, data, length, (OpCode) opCode, webSocket->getUrl());
             if (webSocket->isClosed() || webSocket->isShuttingDown()) {
                 return true;
             }
@@ -338,7 +338,7 @@ bool WebSocket<isServer>::handleFragment(char *data, size_t length, unsigned int
                     return true;
                 }
 
-                group->messageHandler(webSocket, data, length, (OpCode) opCode);
+                group->messageHandler(webSocket, data, length, (OpCode) opCode, webSocket->getUrl());
                 if (webSocket->isClosed() || webSocket->isShuttingDown()) {
                     return true;
                 }

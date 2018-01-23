@@ -25,7 +25,7 @@ protected:
 
     std::function<void(WebSocket<isServer> *, HttpRequest)> connectionHandler;
     std::function<void(WebSocket<isServer> *)> transferHandler;
-    std::function<void(WebSocket<isServer> *, char *message, size_t length, OpCode opCode)> messageHandler;
+    std::function<void(WebSocket<isServer> *, char *message, size_t length, OpCode opCode, std::string url)> messageHandler;
     std::function<void(WebSocket<isServer> *, int code, char *message, size_t length)> disconnectionHandler;
     std::function<void(WebSocket<isServer> *, char *, size_t)> pingHandler;
     std::function<void(WebSocket<isServer> *, char *, size_t)> pongHandler;
@@ -66,7 +66,7 @@ protected:
 public:
     void onConnection(std::function<void(WebSocket<isServer> *, HttpRequest)> handler);
     void onTransfer(std::function<void(WebSocket<isServer> *)> handler);
-    void onMessage(std::function<void(WebSocket<isServer> *, char *, size_t, OpCode)> handler);
+    void onMessage(std::function<void(WebSocket<isServer> *, char *, size_t, OpCode, std::string)> handler);
     void onDisconnection(std::function<void(WebSocket<isServer> *, int code, char *message, size_t length)> handler);
     void onPing(std::function<void(WebSocket<isServer> *, char *, size_t)> handler);
     void onPong(std::function<void(WebSocket<isServer> *, char *, size_t)> handler);

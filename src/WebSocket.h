@@ -16,6 +16,7 @@ template <const bool isServer>
 struct WIN32_EXPORT WebSocket : uS::Socket, WebSocketState<isServer> {
 protected:
     std::string fragmentBuffer;
+    std::string url="/";
     enum CompressionStatus : char {
         DISABLED,
         ENABLED,
@@ -23,9 +24,10 @@ protected:
     } compressionStatus;
     unsigned char controlTipLength = 0, hasOutstandingPong = false;
 
-    WebSocket(bool perMessageDeflate, uS::Socket *socket) : uS::Socket(std::move(*socket)) {
+    WebSocket(bool perMessageDeflate, uS::Socket *socket, std::string url_str="/") : uS::Socket(std::move(*socket)), url(url_str){
         compressionStatus = perMessageDeflate ? CompressionStatus::ENABLED : CompressionStatus::DISABLED;
     }
+
 
     static uS::Socket *onData(uS::Socket *s, char *data, size_t length);
     static void onEnd(uS::Socket *s);
@@ -69,6 +71,8 @@ public:
     void transfer(Group<isServer> *group);
 
     // Thread safe
+    std::string getUrl(){ return url; }
+
     void terminate();
     void ping(const char *message) {send(message, OpCode::PING);}
     void send(const char *message, OpCode opCode = OpCode::TEXT) {send(message, strlen(message), opCode);}

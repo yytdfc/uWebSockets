@@ -109,7 +109,7 @@ uS::Socket *HttpSocket<isServer>::onData(uS::Socket *s, char *data, size_t lengt
                             Group<isServer>::from(httpSocket)->removeHttpSocket(httpSocket);
 
                             // Warning: changes socket, needs to inform the stack of Poll address change!
-                            WebSocket<isServer> *webSocket = new WebSocket<isServer>(perMessageDeflate, httpSocket);
+                            WebSocket<isServer> *webSocket = new WebSocket<isServer>(perMessageDeflate, httpSocket, req.getUrl().toString());
                             webSocket->template setState<WebSocket<isServer>>();
                             webSocket->change(webSocket->nodeData->loop, webSocket, webSocket->setPoll(UV_READABLE));
                             Group<isServer>::from(webSocket)->addWebSocket(webSocket);
@@ -159,7 +159,7 @@ uS::Socket *HttpSocket<isServer>::onData(uS::Socket *s, char *data, size_t lengt
                 if (req.getHeader("upgrade", 7)) {
 
                     // Warning: changes socket, needs to inform the stack of Poll address change!
-                    WebSocket<isServer> *webSocket = new WebSocket<isServer>(false, httpSocket);
+                    WebSocket<isServer> *webSocket = new WebSocket<isServer>(false, httpSocket, req.getUrl().toString());
                     httpSocket->cancelTimeout();
                     webSocket->setUserData(httpSocket->httpUser);
                     webSocket->template setState<WebSocket<isServer>>();
