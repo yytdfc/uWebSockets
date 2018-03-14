@@ -9,7 +9,7 @@ int main() {
         return new std::thread([]() {
             uWS::Hub h;
 
-            h.onMessage([](uWS::WebSocket<uWS::SERVER> *ws, char *message, size_t length, uWS::OpCode opCode) {
+            h.onMessage([](uWS::WebSocket<uWS::SERVER> *ws, char *message, size_t length, uWS::OpCode opCode, std::string url) {
                 ws->send(message, length, opCode);
             });
 

@@ -1,4 +1,3 @@
-# SRC := src/Extensions.cpp src/Group.cpp src/Networking.cpp src/Hub.cpp src/Node.cpp src/WebSocket.cpp src/HTTPSocket.cpp src/Socket.cpp src/Epoll.cpp
 SRCS=$(wildcard ./src/*.cpp)
 OBJS=$(SRCS:.cpp=.o)
 CPP_SHARED := -std=c++11 -O3 -I src -shared -fPIC 
