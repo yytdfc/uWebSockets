@@ -21,12 +21,12 @@ char *getHeaders(char *buffer, char *end, Header *headers, size_t maxHeaders) {
                 return nullptr;
             }
         } else {
-            headers->keyLength = buffer - headers->key;
+            headers->keyLength = (unsigned int) (buffer - headers->key);
             for (buffer++; (*buffer == ':' || *buffer < 33) && *buffer != '\r'; buffer++);
             headers->value = buffer;
             buffer = (char *) memchr(buffer, '\r', end - buffer); //for (; *buffer != '\r'; buffer++);
             if (buffer /*!= end*/ && buffer[1] == '\n') {
-                headers->valueLength = buffer - headers->value;
+                headers->valueLength = (unsigned int) (buffer - headers->value);
                 buffer += 2;
                 headers++;
             } else {
@@ -140,7 +140,7 @@ uS::Socket *HttpSocket<isServer>::onData(uS::Socket *s, char *data, size_t lengt
                         Header contentLength;
                         if (req.getMethod() != HttpMethod::METHOD_GET && (contentLength = req.getHeader("content-length", 14))) {
                             httpSocket->contentLength = atoi(contentLength.value);
-                            size_t bytesToRead = std::min<int>(httpSocket->contentLength, end - cursor);
+                            size_t bytesToRead = std::min<size_t>(httpSocket->contentLength, end - cursor);
                             Group<SERVER>::from(httpSocket)->httpRequestHandler(res, req, cursor, bytesToRead, httpSocket->contentLength -= bytesToRead);
                             cursor += bytesToRead;
                         } else {
@@ -169,7 +169,7 @@ uS::Socket *HttpSocket<isServer>::onData(uS::Socket *s, char *data, size_t lengt
                     webSocket->cork(true);
                     Group<isServer>::from(webSocket)->connectionHandler(webSocket, req);
                     if (!(webSocket->isClosed() || webSocket->isShuttingDown())) {
-                        WebSocketProtocol<isServer, WebSocket<isServer>>::consume(cursor, end - cursor, webSocket);
+                        WebSocketProtocol<isServer, WebSocket<isServer>>::consume(cursor, (unsigned int) (end - cursor), webSocket);
                     }
                     webSocket->cork(false);
                     delete httpSocket;
@@ -233,6 +233,13 @@ void HttpSocket<isServer>::upgrade(const char *secKey, const char *extensions, s
             memcpy(upgradeBuffer + upgradeResponseLength + 26, extensionsResponse.data(), extensionsResponse.length());
             memcpy(upgradeBuffer + upgradeResponseLength + 26 + extensionsResponse.length(), "\r\n", 2);
             upgradeResponseLength += 26 + extensionsResponse.length() + 2;
+        }
+        // select first protocol
+        for (int i = 0; i < subprotocolLength; i++) {
+            if (subprotocol[i] == ',') {
+                subprotocolLength = i;
+                break;
+            }
         }
         if (subprotocolLength && subprotocolLength < 200) {
             memcpy(upgradeBuffer + upgradeResponseLength, "Sec-WebSocket-Protocol: ", 24);

@@ -3,7 +3,7 @@
 
 #include <boost/asio.hpp>
 
-typedef boost::asio::ip::tcp::socket::native_type uv_os_sock_t;
+typedef boost::asio::ip::tcp::socket::native_handle_type uv_os_sock_t;
 static const int UV_READABLE = 1;
 static const int UV_WRITABLE = 2;
 
@@ -21,6 +21,10 @@ struct Loop : boost::asio::io_service {
 
     void run() {
         boost::asio::io_service::run();
+    }
+
+    void poll() {
+        boost::asio::io_service::poll();
     }
 };
 
@@ -114,7 +118,7 @@ struct Poll {
         return !socket;
     }
 
-    boost::asio::ip::tcp::socket::native_type getFd() {
+    boost::asio::ip::tcp::socket::native_handle_type getFd() {
         return socket ? socket->native_handle() : -1;
     }
 

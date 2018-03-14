@@ -13,7 +13,7 @@ enum ListenOptions : int {
 };
 
 class WIN32_EXPORT Node {
-private:
+protected:
     template <void C(Socket *p, bool error)>
     static void connect_cb(Poll *p, int status, int events) {
         C((Socket *) p, status < 0);
@@ -71,7 +71,6 @@ private:
         } while ((clientFd = netContext->acceptSocket(serverFd)) != INVALID_SOCKET);
     }
 
-protected:
     Loop *loop;
     NodeData *nodeData;
     std::recursive_mutex asyncMutex;
@@ -79,7 +78,12 @@ protected:
 public:
     Node(int recvLength = 1024, int prePadding = 0, int postPadding = 0, bool useDefaultLoop = false);
     ~Node();
+
+    /* Blocking */
     void run();
+
+    /* Non-blocking */
+    void poll();
 
     Loop *getLoop() {
         return loop;
@@ -172,7 +176,7 @@ public:
         int enabled = true;
         setsockopt(listenFd, SOL_SOCKET, SO_REUSEADDR, &enabled, sizeof(enabled));
 
-        if (bind(listenFd, listenAddr->ai_addr, listenAddr->ai_addrlen) || ::listen(listenFd, 512)) {
+        if (::bind(listenFd, listenAddr->ai_addr, listenAddr->ai_addrlen) || ::listen(listenFd, 512)) {
             netContext->closeSocket(listenFd);
             freeaddrinfo(result);
             return true;

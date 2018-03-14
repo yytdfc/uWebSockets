@@ -10,7 +10,7 @@
 
 namespace uWS {
 
-struct WIN32_EXPORT Hub : private uS::Node, public Group<SERVER>, public Group<CLIENT> {
+struct WIN32_EXPORT Hub : protected uS::Node, public Group<SERVER>, public Group<CLIENT> {
 protected:
     struct ConnectionData {
         std::string path;
@@ -67,6 +67,7 @@ public:
     }
 
     using uS::Node::run;
+    using uS::Node::poll;
     using uS::Node::getLoop;
     using Group<SERVER>::onConnection;
     using Group<CLIENT>::onConnection;
